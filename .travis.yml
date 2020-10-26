@@ -6,7 +6,7 @@ env:
   global:
     - ANDROID_API_LEVEL=30
     - ANDROID_BUILD_TOOLS_VERSION=30.0.0
-    - ANDROID_EMU_API_LEVEL=26
+    - ANDROID_EMU_API_LEVEL=25
     - ANDROID_ABI=armeabi-v7a
     - QEMU_AUDIO_DRV=none # Remove audio
 
@@ -22,6 +22,7 @@ android:
 
     # The SDK version used to compile your project
     - android-$ANDROID_API_LEVEL
+    - android-29
     - android-$ANDROID_EMU_API_LEVEL
 
     # Additional components
@@ -45,6 +46,7 @@ android:
 before_install:
   - yes | sdkmanager "platforms;android-30"
   - yes | sdkmanager "platforms;android-29"
+  - yes | sdkmanager "platforms;android-25"
 
 before_script:
   - chmod +x gradlew
