@@ -4,8 +4,10 @@ dist: trusty
 
 env:
   global:
-    - ANDROID_API_LEVEL=30
+    - ANDROID_API_LEVEL=26
     - ANDROID_BUILD_TOOLS_VERSION=26.0.2
+    - ANDROID_EMU_API_LEVEL=22
+    - ANDROID_ABI=x86
 
 android:
   components:
@@ -15,31 +17,46 @@ android:
     # - platform-tools
 
     # The BuildTools version used by your project
-    - build-tools-26.0.2
+    - build-tools-$ANDROID_BUILD_TOOLS_VERSION
 
     # The SDK version used to compile your project
-    - android-26
-    - android-24
+    - android-$ANDROID_API_LEVEL
+    - android-$ANDROID_EMU_API_LEVEL
 
     # Additional components
     - extra-google-google_play_services
     - extra-google-m2repository
     - extra-android-m2repository
+    - extra-android-support
 
     - tools
     - platform-tools
 
     # Specify at least one system image,
     # if you need to run emulator(s) during your tests
-    - sys-img-x86-android-24
+    - sys-img-$ANDROID_ABI-google_apis-$ANDROID_API_LEVEL
 
   licenses:
       - 'android-sdk-preview-license-52d11cd2'
       - 'android-sdk-license-.+'
       - 'google-gdk-license-.+'
 
-before_script:
-  - echo no | android create avd --force -n test -t android-26 --abi x86
-  - emulator -avd test -no-audio -no-window &
+before_install:
+  # Get gradle
+  - chmod +x gradlew
+  - wget https://services.gradle.org/distributions/gradle-5.3-bin.zip
+  - unzip -qq gradle-5.3-bin.zip
+  - export GRADLE_HOME=$PWD/gradle-5.3
+  - export PATH=$GRADLE_HOME/bin:$PATH
+
+  # Build the project
+  - gradle -v
+
+  # Start the emulator
+  - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
+  - emulator -avd test -no-skin -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
+
+  # The app will now automatically be installed and tested via
+  # the command `gradle connectedCheck`
