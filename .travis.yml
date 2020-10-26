@@ -6,7 +6,7 @@ env:
   global:
     - ANDROID_API_LEVEL=30
     - ANDROID_BUILD_TOOLS_VERSION=30.0.0
-    - ANDROID_EMU_API_LEVEL=22
+    - ANDROID_EMU_API_LEVEL=30
     - ANDROID_ABI=armeabi-v7a
     - QEMU_AUDIO_DRV=none # Remove audio
 
@@ -22,7 +22,7 @@ android:
 
     # The SDK version used to compile your project
     - android-$ANDROID_API_LEVEL
-    - android-$ANDROID_EMU_API_LEVEL
+    - android-29
 
     # Additional components
     - extra-google-google_play_services
@@ -44,6 +44,7 @@ android:
 
 before_install:
   - yes | sdkmanager "platforms;android-30"
+  - yes | sdkmanager "platforms;android-29"
 
 before_script:
   # Build the project
@@ -56,4 +57,4 @@ before_script:
   - adb shell input keyevent 82 &
 
 script:
-  - ./gradlew testDebugUnitTest #test
+  - ./gradlew clean test
