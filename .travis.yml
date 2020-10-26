@@ -8,6 +8,7 @@ env:
     - ANDROID_BUILD_TOOLS_VERSION=26.0.2
     - ANDROID_EMU_API_LEVEL=22
     - ANDROID_ABI=armeabi-v7a
+    - QEMU_AUDIO_DRV=none # Remove audio
 
 android:
   components:
@@ -47,9 +48,12 @@ before_script:
 
   # Start the emulator
   - echo no | android create avd --force -n test -t android-$ANDROID_API_LEVEL --abi google_apis/$ANDROID_ABI
-  - emulator -avd test -no-audio -no-window &
+  - emulator -avd test -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
 
-  # The app will now automatically be installed and tested via
-  # the command `gradle connectedCheck`
+script:
+  - ./gradlew clean installDebug
+  - ./gradlew check
+  - ./gradlew testDebugUnitTest
+  - ./gradlew connectedDebugAndroidTest
